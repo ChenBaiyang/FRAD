@@ -1,6 +1,8 @@
 import numpy as np
 import torch
+
 torch.set_default_dtype(torch.float32)
+
 
 def relation_matrix(vec1, vec2, e):
     dist_matrix = torch.cdist(vec1, vec2, p=1)
@@ -11,6 +13,7 @@ def relation_matrix(vec1, vec2, e):
     over_distance = dist_matrix > e
     relation_matrix[over_distance] = 0
     return torch.tensor(relation_matrix)
+
 
 def relation_matrix_torch(vec1, vec2, e):
     dist_matrix = torch.cdist(vec1, vec2, p=1)
@@ -34,7 +37,7 @@ def FRAD_torch(data, dim=100, gamma=0.5):
     card_a = torch.zeros((m, n), dtype=torch.float32)
     for i in range(m):
         card_a[i] = relation_matrix_torch(data[:, i], data[:, i], delta[i]).sum(axis=0)
-        Ea[i] = -torch.sum(torch.log2(card_a[i] / n))/n
+        Ea[i] = -torch.sum(torch.log2(card_a[i] / n)) / n
         # print('{:.1f}%'.format(i/m*100), end=' ')
 
     # print("Calculating cardinality of attribute subset...")
@@ -60,6 +63,7 @@ def FRAD_torch(data, dim=100, gamma=0.5):
 
     return FRAD
 
+
 def FRAD_example(data, dim=100, gamma=0.5):
     n, m = data.shape
     data = torch.tensor(data, dtype=torch.float32)
@@ -78,10 +82,10 @@ def FRAD_example(data, dim=100, gamma=0.5):
     card_a = torch.zeros((m, n), dtype=torch.float32)
     for i in range(m):
         rel_matrix = relation_matrix(data[:, i], data[:, i], delta[i])
-        print(np.array(rel_matrix,dtype=np.float32))
+        print(np.array(rel_matrix, dtype=np.float32))
         card_a[i] = rel_matrix.sum(axis=0)
 
-        Ea[i] = -torch.sum(torch.log2(card_a[i] / n))/n
+        Ea[i] = -torch.sum(torch.log2(card_a[i] / n)) / n
         # print('{:.1f}%'.format(i/m*100), end=' ')
     print(Ea)
     # print("Calculating cardinality of attribute subset...")
@@ -111,8 +115,6 @@ def FRAD_example(data, dim=100, gamma=0.5):
     FRAD = 1 - (torch.sqrt(card_a / n)).mean(axis=0) * relative_dif_A.mean(axis=0)
     return FRAD
 
+
 if __name__ == "__main__":
     pass
-
-
-
